@@ -1,5 +1,5 @@
 <script  lang="ts">
-import { defineComponent } from "@vue/runtime-core";
+import { defineComponent, onMounted } from "@vue/runtime-core";
 
 export default defineComponent({
   setup(ctx) {
@@ -11,7 +11,10 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="home">{{ test }}</div>
+  <div class="home">
+    <el-button>Defaultddfasd</el-button>
+    {{ test }}
+  </div>
 </template>
 
 <style scoped>
