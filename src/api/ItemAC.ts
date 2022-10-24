@@ -43,4 +43,11 @@ export class ItemAC extends BaseAC {
             url: '/item',
         });
     }
+    /** 导入项目 */
+    itemImport(data: NApi.IItemD[]) {
+        return this.postData({
+            url: '/itemImport',
+            data,
+        });
+    }
 }

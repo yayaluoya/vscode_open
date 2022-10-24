@@ -12,6 +12,7 @@ import { createReadStream, statSync } from "fs";
 import { vscodeOpen } from "./tool/vscodeOpen";
 import { ArrayUtils } from "yayaluoya-tool/dist/ArrayUtils";
 import { URLT } from "yayaluoya-tool/dist/http/URLT";
+import { openUrl } from "./tool/openUrl";
 
 /**
  * 启动服务
@@ -68,7 +69,8 @@ export function server(config_: Partial<IConfig>) {
 
     app.listen(config.port, () => {
         let url = `http://localhost:${config.port}`;
-        console.log(chalk.blue(`服务已开启@${url}`))
+        openUrl(url);
+        console.log(chalk.blue(`vscodeOpen服务已开启:\n${url}`))
     })
 }
 
@@ -143,6 +145,21 @@ function addApi(app: Express) {
     });
     app.get('/item', (req, res) => {
         res.send(new ResData(ItemDP.instance.data));
+    })
+    app.post('/itemImport', (req, res) => {
+        let itemList = req.body as IItemD[];
+        if (itemList.length <= 0) {
+            res.send(new ResData().fail('一个项目都没有呢'));
+            return;
+        }
+        for (let o of itemList) {
+            if (!ArrayUtils.has(ItemDP.instance.data, _ => {
+                return _.id == o.id;
+            })) {
+                ItemDP.instance.data.push(o);
+            }
+        }
+        res.send(new ResData(null, undefined, '导入成功'));
     })
 
     /**

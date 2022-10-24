@@ -12,9 +12,17 @@ import { Mes } from "./mes/Mes";
 import { ItemAC } from "./api/ItemAC";
 import { ComAC } from "./api/ComAC";
 import { ObjectUtils } from "yayaluoya-tool/dist/obj/ObjectUtils";
+import { FileT } from "yayaluoya-tool/dist/web/FileT";
+import { getFile } from "yayaluoya-tool/dist/web/getFile";
 import { FormInstance, FormRules } from "element-plus";
 import SecondConfirmation from "./components/SecondConfirmation.vue";
-import { Calendar, Search } from "@element-plus/icons-vue";
+import {
+  Calendar,
+  Search,
+  CirclePlus,
+  Download,
+  Upload,
+} from "@element-plus/icons-vue";
 
 const formData_: NApi.IItemD = {
   /** id */
@@ -151,6 +159,37 @@ export default defineComponent({
         });
     }
 
+    function importClick() {
+      getFile().then((file) => {
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+          let list: NApi.IItemD[] = [];
+          try {
+            list = JSON.parse((evt.target?.result as string) || "");
+          } catch {}
+          ItemAC.instance
+            .itemImport(list)
+            .then((_) => {
+              Mes.success("导入成功");
+              loadList();
+            })
+            .catch(Mes.handleHttpCatch);
+        };
+        reader.readAsText(file as File);
+      });
+    }
+    function exportClick() {
+      FileT.download(
+        URL.createObjectURL(
+          new File(
+            [new Blob([JSON.stringify(list.value)])],
+            "vscodeOpenItemList.json"
+          )
+        ),
+        "vscodeOpenItemList.json"
+      );
+    }
+
     return {
       getFileUrl: ComAC.getFileUrl,
       show,
@@ -169,6 +208,11 @@ export default defineComponent({
       onRemove,
       filterInput,
       Search,
+      importClick,
+      exportClick,
+      CirclePlus,
+      Upload,
+      Download,
     };
   },
 });
@@ -197,15 +241,33 @@ export default defineComponent({
       <div class="content">
         <template v-if="show == 'list'">
           <div class="top">
-            <el-button style="margin-right: 20px" type="primary" @click="edit()"
-              >添加</el-button
-            >
-            <el-input
-              v-model="filterInput"
-              placeholder="输入筛选"
-              :prefix-icon="Search"
-              clearable
-            />
+            <div class="left">
+              <el-button
+                style="margin-right: 20px"
+                type="primary"
+                @click="edit()"
+                :icon="CirclePlus"
+              >
+                添加</el-button
+              >
+              <el-input
+                v-model="filterInput"
+                placeholder="输入筛选"
+                :prefix-icon="Search"
+                clearable
+              />
+            </div>
+            <div class="right">
+              <el-button
+                style="margin-right: 20px"
+                @click="importClick()"
+                :icon="Download"
+                >导入</el-button
+              >
+              <el-button style="margin: 0" @click="exportClick()" :icon="Upload"
+                >导出</el-button
+              >
+            </div>
           </div>
           <el-table border :data="list_" style="width: 100%">
             <el-table-column prop="key" label="key" />
@@ -371,7 +433,15 @@ export default defineComponent({
         display: flex;
         flex-direction: row;
         align-items: center;
+        justify-content: space-between;
         margin-bottom: 10px;
+        width: 100%;
+        > .right,
+        > .left {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+        }
       }
     }
   }

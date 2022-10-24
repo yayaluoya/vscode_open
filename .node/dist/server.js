@@ -17,6 +17,7 @@ const fs_1 = require("fs");
 const vscodeOpen_1 = require("./tool/vscodeOpen");
 const ArrayUtils_1 = require("yayaluoya-tool/dist/ArrayUtils");
 const URLT_1 = require("yayaluoya-tool/dist/http/URLT");
+const openUrl_1 = require("./tool/openUrl");
 /**
  * 启动服务
  * @param config 一个临时的config
@@ -63,7 +64,8 @@ function server(config_) {
     addApi(app);
     app.listen(config.port, () => {
         let url = `http://localhost:${config.port}`;
-        console.log(chalk_1.default.blue(`服务已开启@${url}`));
+        (0, openUrl_1.openUrl)(url);
+        console.log(chalk_1.default.blue(`vscodeOpen服务已开启:\n${url}`));
     });
 }
 exports.server = server;
@@ -136,6 +138,21 @@ function addApi(app) {
     });
     app.get('/item', (req, res) => {
         res.send(new ResData_1.ResData(ItemDP_1.ItemDP.instance.data));
+    });
+    app.post('/itemImport', (req, res) => {
+        let itemList = req.body;
+        if (itemList.length <= 0) {
+            res.send(new ResData_1.ResData().fail('一个项目都没有呢'));
+            return;
+        }
+        for (let o of itemList) {
+            if (!ArrayUtils_1.ArrayUtils.has(ItemDP_1.ItemDP.instance.data, _ => {
+                return _.id == o.id;
+            })) {
+                ItemDP_1.ItemDP.instance.data.push(o);
+            }
+        }
+        res.send(new ResData_1.ResData(null, undefined, '导入成功'));
     });
     /**
      * 其它
