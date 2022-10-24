@@ -1,5 +1,6 @@
 import { BaseDataProxy } from "./BaseDataProxy";
 import { instanceTool } from "yayaluoya-tool/dist/instanceTool";
+import { Crypto } from "yayaluoya-tool/dist/Crypto";
 
 /**
  * 项目数据
@@ -27,5 +28,16 @@ export class ItemDP extends BaseDataProxy<IItemD[]> {
 
     protected getNewData() {
         return [];
+    }
+
+    /**
+     * 添加一个item
+     * @param item 
+     */
+    add(item: Omit<IItemD, 'id'>) {
+        return this.data.push({
+            id: new Crypto('', '').md5(Date.now() + Math.random().toString().split('.')[1]),
+            ...item,
+        });
     }
 }

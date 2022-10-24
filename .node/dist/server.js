@@ -15,7 +15,6 @@ const chalk_1 = __importDefault(require("chalk"));
 const ItemDP_1 = require("./localData/ItemDP");
 const fs_1 = require("fs");
 const vscodeOpen_1 = require("./tool/vscodeOpen");
-const Crypto_1 = require("yayaluoya-tool/dist/Crypto");
 const ArrayUtils_1 = require("yayaluoya-tool/dist/ArrayUtils");
 /**
  * 启动服务
@@ -101,15 +100,14 @@ function addApi(app) {
     });
     app.post('/item', (req, res) => {
         let item = req.body;
-        //生成一个唯一的id
-        item.id = new Crypto_1.Crypto('', '').md5(Date.now() + Math.random().toString().split('.')[1]);
         if (!(0, fs_1.statSync)(item.path, {
             throwIfNoEntry: false,
         })) {
             res.send(new ResData_1.ResData().fail('path不是一个文件或目录'));
             return;
         }
-        ItemDP_1.ItemDP.instance.data.push(item);
+        ItemDP_1.ItemDP.instance.add(item);
+        //
         res.send(new ResData_1.ResData(item, undefined, '添加成功'));
     });
     app.delete('/item', (req, res) => {

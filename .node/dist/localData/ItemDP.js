@@ -9,12 +9,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ItemDP = void 0;
 const BaseDataProxy_1 = require("./BaseDataProxy");
 const instanceTool_1 = require("yayaluoya-tool/dist/instanceTool");
+const Crypto_1 = require("yayaluoya-tool/dist/Crypto");
 /**
  * 项目数据管理
  */
 let ItemDP = class ItemDP extends BaseDataProxy_1.BaseDataProxy {
     getNewData() {
         return [];
+    }
+    /**
+     * 添加一个item
+     * @param item
+     */
+    add(item) {
+        return this.data.push(Object.assign({ id: new Crypto_1.Crypto('', '').md5(Date.now() + Math.random().toString().split('.')[1]) }, item));
     }
 };
 ItemDP = __decorate([

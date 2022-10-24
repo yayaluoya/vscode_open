@@ -4,8 +4,10 @@ import { IConfig } from "../config/IConfig";
 import chalk from "chalk";
 import { server } from "../server";
 import { vscodeOpen } from "../tool/vscodeOpen";
-import { ItemDP } from "../localData/ItemDP";
+import { IItemD, ItemDP } from "../localData/ItemDP";
 const packageJSON = require('../../../package.json');
+import inquirer from 'inquirer';
+import { ArrayUtils } from "yayaluoya-tool/dist/ArrayUtils";
 
 interface IOp extends IOp_ {
     /** 帮助 */
@@ -13,7 +15,11 @@ interface IOp extends IOp_ {
     /** 项目key列表 */
     keys: string;
     /** 显示当前有多少项目 */
-    keyList: boolean;
+    list: boolean;
+    /** 添加一个项目 */
+    add: [string, string];
+    /** 删除一个项目 */
+    remove: string;
 }
 
 let cmdOp = getCmdOp<IOp &
@@ -23,9 +29,11 @@ let cmdOp = getCmdOp<IOp &
     >
 >((pro) => {
     pro.option('-h --help')
-        .option('-kl --key-list')
+        .option('-l --list')
         .option('-k --keys <keys>')
-        .option('-p --port');
+        .option('-p --port')
+        .option('-add --add <key...>')
+        .option('-r --remove <keys>')
 });
 
 // console.log('cmdOp', cmdOp);
@@ -39,14 +47,31 @@ switch (true) {
         console.log(chalk.green('   -v --version ') + chalk.gray('查看当前工具版本'));
         console.log(chalk.green('   -h --help ') + chalk.gray('查看所有的命令和帮助信息'));
         console.log(chalk.green('   -p --port ') + chalk.gray('指定用哪个端口启动'));
-        console.log(chalk.green('   -kl --key-list ') + chalk.gray('显示项目列表'));
+        console.log(chalk.green('   -l --list ') + chalk.gray('显示项目列表，可以选择并打开具体项目'));
         console.log(chalk.green('   -k --keys <keys> ') + chalk.gray('直接打开哪些项目，多个项目用,，号分隔'));
+        console.log(chalk.green('   -add --add <key> <path> ') + chalk.gray('添加一个项目<key> 该项目的key <path> 该项目的本地路径'));
+        console.log(chalk.green('   -r --remove <keys> ') + chalk.gray('删除项目，多个项目用,，号分隔'));
         break;
-    case cmdOp.keyList:
-        console.log(chalk.yellow('项目列表:'));
-        for (let { key, path, title } of ItemDP.instance.data) {
-            console.log(chalk.green(key), chalk.gray(title), chalk.gray(path));
-        }
+    case cmdOp.list:
+        let list = ItemDP.instance.data;
+        inquirer
+            .prompt({
+                type: 'checkbox',
+                name: 'select',
+                message: '项目列表-按空格键选择，按enter键确认:',
+                choices: list.map(_ => {
+                    return {
+                        name: `${_.key} ${_.title} ${_.path}`,
+                        value: _,
+                    };
+                }),
+            })
+            .then(({ select }: { select: IItemD[] }) => {
+                select && select.length > 0 && vscodeOpen(select.map(_ => _.path));
+            })
+            .catch((error) => {
+                console.log(chalk.red('出错了'), error);
+            });
         break;
     case Boolean(cmdOp.keys):
         let keys = cmdOp.keys?.split(/[,，]/g);
@@ -58,6 +83,31 @@ switch (true) {
         vscodeOpen(ItemDP.instance.data.filter(_ => {
             return keys.includes(_.key);
         }).map(_ => _.path));
+        break;
+    case Boolean(cmdOp.add):
+        if (!cmdOp.add[0]) {
+            console.log(chalk.red('必须输入key'));
+            break
+        }
+        if (!cmdOp.add[1]) {
+            console.log(chalk.red('必须输入path'));
+            break
+        }
+        let item = {
+            key: cmdOp.add[0],
+            icon: '',
+            title: '',
+            path: cmdOp.add[1],
+        }
+        ItemDP.instance.add(item);
+        console.log(chalk.blue('添加成功'), item);
+        break;
+    case Boolean(cmdOp.remove):
+        let keys2 = cmdOp.remove?.split(/[,，]/g);
+        ArrayUtils.eliminate(ItemDP.instance.data, _ => {
+            return keys2.includes(_.key);
+        });
+        console.log(chalk.blue('删除成功'));
         break;
     default:
         server({

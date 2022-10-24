@@ -108,15 +108,14 @@ function addApi(app: Express) {
     })
     app.post('/item', (req, res) => {
         let item: IItemD = req.body;
-        //生成一个唯一的id
-        item.id = new Crypto('', '').md5(Date.now() + Math.random().toString().split('.')[1]);
         if (!statSync(item.path, {
             throwIfNoEntry: false,
         })) {
             res.send(new ResData().fail('path不是一个文件或目录'));
             return;
         }
-        ItemDP.instance.data.push(item);
+        ItemDP.instance.add(item);
+        //
         res.send(new ResData(item, undefined, '添加成功'));
     })
     app.delete('/item', (req, res) => {
