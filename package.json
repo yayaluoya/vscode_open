@@ -1,14 +1,14 @@
 {
   "name": "vscode_open",
-  "private": true,
-  "version": "0.1.0",
+  "version": "0.1.2",
   "type": "module",
   "description": "一个方便管理vscode项目的工具",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "test": "nodemon ./.node/dist/_bin/index.js --watch ./.node/dist/**",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "npm-publish": "npm publish"
   },
   "bin": {
     "vscode_open": "./.node/dist/_bin/index.js",
