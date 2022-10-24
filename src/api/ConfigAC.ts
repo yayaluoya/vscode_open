@@ -16,9 +16,10 @@ export class ConfigAC extends BaseAC {
         });
     }
     /** 编辑配置 */
-    edit(data: Partial<NApi.IItemD>) {
+    edit(data: Partial<NApi.IConfig>) {
         return this.putData({
-            url: '',
+            url: '/config',
+            data,
         })
     }
 }

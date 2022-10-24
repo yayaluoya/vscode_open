@@ -7,7 +7,7 @@ import { Crypto } from "yayaluoya-tool/dist/Crypto";
  */
 export interface IItemD {
     /** 唯一的id */
-    id: string,
+    id?: string,
     /** 一个简称，可以重复 */
     key: string;
     /** 图标，本地文件路径 */
@@ -16,6 +16,8 @@ export interface IItemD {
     title: string;
     /** 项目路径 */
     path: string;
+    /** 打开次数 */
+    openNumber: number;
 }
 
 /**
@@ -34,10 +36,11 @@ export class ItemDP extends BaseDataProxy<IItemD[]> {
      * 添加一个item
      * @param item 
      */
-    add(item: Omit<IItemD, 'id'>) {
+    add(item: Omit<IItemD, 'id' | 'openNumber'>) {
         return this.data.push({
             id: new Crypto('', '').md5(Date.now() + Math.random().toString().split('.')[1]),
             ...item,
+            openNumber: 0,
         });
     }
 }

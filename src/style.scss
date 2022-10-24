@@ -1,0 +1,24 @@
+body {
+  margin: 0;
+  background-color: #fbfbfb;
+  color: #2f495e;
+}
+
+.el-dialog {
+  border-radius: 10px;
+
+  >.el-dialog__header {
+    border-bottom: 1px solid #f1f1f1;
+    margin: 0;
+
+    >.el-dialog__title {
+      font-weight: bold;
+      color: #505050;
+    }
+  }
+
+  >.el-dialog__footer {
+    border-top: 1px solid #f1f1f1;
+    margin: 0;
+  }
+}

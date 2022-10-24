@@ -8,10 +8,10 @@ import { PathManager } from "./manager/PathManager";
 import serveStatic from "serve-static";
 import chalk from "chalk";
 import { IItemD, ItemDP } from "./localData/ItemDP";
-import { statSync } from "fs";
+import { createReadStream, statSync } from "fs";
 import { vscodeOpen } from "./tool/vscodeOpen";
-import { Crypto } from "yayaluoya-tool/dist/Crypto";
 import { ArrayUtils } from "yayaluoya-tool/dist/ArrayUtils";
+import { URLT } from "yayaluoya-tool/dist/http/URLT";
 
 /**
  * 启动服务
@@ -104,6 +104,12 @@ function addApi(app: Express) {
             return;
         }
         vscodeOpen(path);
+        let onItem = ItemDP.instance.data.find(_ => {
+            return URLT.contrast(_.path, path);
+        });
+        if (onItem) {
+            onItem.openNumber = (onItem.openNumber || 0) + 1;
+        }
         res.send(new ResData());
     })
     app.post('/item', (req, res) => {
@@ -137,5 +143,20 @@ function addApi(app: Express) {
     });
     app.get('/item', (req, res) => {
         res.send(new ResData(ItemDP.instance.data));
+    })
+
+    /**
+     * 其它
+     */
+    app.get('/file', (req, res) => {
+        let path = req.query.path as string;
+        if (statSync(path, {
+            throwIfNoEntry: false,
+        })?.isFile()) {
+            createReadStream(path).pipe(res);
+        } else {
+            res.writeHead(404);
+            res.end();
+        }
     })
 }

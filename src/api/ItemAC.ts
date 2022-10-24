@@ -39,7 +39,7 @@ export class ItemAC extends BaseAC {
     }
     /** 获取项目列表 */
     list() {
-        return this.getData({
+        return this.getData<NApi.IItemD[]>({
             url: '/item',
         });
     }

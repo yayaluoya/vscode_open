@@ -1,6 +1,7 @@
 import { AxiosResponse, AxiosRequestConfig } from "axios";
 import { ResData } from "yayaluoya-tool/dist/http/ResData";
 import { BaseApiCon } from "yayaluoya-tool/dist/node/BaseApiCon";
+import { HttpStatus } from "yayaluoya-tool/src/http/HttpStatus";
 /**
  * 基类api
  */
@@ -72,7 +73,10 @@ export class BaseAC extends BaseApiCon {
         });
     }
 
-    protected resData_(data: any, con: boolean, res: AxiosResponse<any, any>): ResData<any> {
+    protected resData_(data: ResData, con: boolean, res: AxiosResponse<any, any>): ResData<any> {
+        if (data.status != HttpStatus.OK) {
+            throw data;
+        }
         return data;
     }
 }

@@ -22,7 +22,7 @@ let ItemDP = class ItemDP extends BaseDataProxy_1.BaseDataProxy {
      * @param item
      */
     add(item) {
-        return this.data.push(Object.assign({ id: new Crypto_1.Crypto('', '').md5(Date.now() + Math.random().toString().split('.')[1]) }, item));
+        return this.data.push(Object.assign(Object.assign({ id: new Crypto_1.Crypto('', '').md5(Date.now() + Math.random().toString().split('.')[1]) }, item), { openNumber: 0 }));
     }
 };
 ItemDP = __decorate([

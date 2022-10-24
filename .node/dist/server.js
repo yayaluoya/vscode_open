@@ -16,6 +16,7 @@ const ItemDP_1 = require("./localData/ItemDP");
 const fs_1 = require("fs");
 const vscodeOpen_1 = require("./tool/vscodeOpen");
 const ArrayUtils_1 = require("yayaluoya-tool/dist/ArrayUtils");
+const URLT_1 = require("yayaluoya-tool/dist/http/URLT");
 /**
  * 启动服务
  * @param config 一个临时的config
@@ -96,6 +97,12 @@ function addApi(app) {
             return;
         }
         (0, vscodeOpen_1.vscodeOpen)(path);
+        let onItem = ItemDP_1.ItemDP.instance.data.find(_ => {
+            return URLT_1.URLT.contrast(_.path, path);
+        });
+        if (onItem) {
+            onItem.openNumber = (onItem.openNumber || 0) + 1;
+        }
         res.send(new ResData_1.ResData());
     });
     app.post('/item', (req, res) => {
@@ -129,5 +136,21 @@ function addApi(app) {
     });
     app.get('/item', (req, res) => {
         res.send(new ResData_1.ResData(ItemDP_1.ItemDP.instance.data));
+    });
+    /**
+     * 其它
+     */
+    app.get('/file', (req, res) => {
+        var _a;
+        let path = req.query.path;
+        if ((_a = (0, fs_1.statSync)(path, {
+            throwIfNoEntry: false,
+        })) === null || _a === void 0 ? void 0 : _a.isFile()) {
+            (0, fs_1.createReadStream)(path).pipe(res);
+        }
+        else {
+            res.writeHead(404);
+            res.end();
+        }
     });
 }
