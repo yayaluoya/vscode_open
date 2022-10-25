@@ -16,6 +16,7 @@ let ConfigDP = class ConfigDP extends BaseDataProxy_1.BaseDataProxy {
     getNewData() {
         return {
             port: 3142,
+            openBrowser: true,
         };
     }
 };

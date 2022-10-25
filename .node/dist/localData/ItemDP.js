@@ -10,6 +10,8 @@ exports.ItemDP = void 0;
 const BaseDataProxy_1 = require("./BaseDataProxy");
 const instanceTool_1 = require("yayaluoya-tool/dist/instanceTool");
 const Crypto_1 = require("yayaluoya-tool/dist/Crypto");
+const ArrayUtils_1 = require("yayaluoya-tool/dist/ArrayUtils");
+const fs_1 = require("fs");
 /**
  * 项目数据管理
  */
@@ -19,10 +21,32 @@ let ItemDP = class ItemDP extends BaseDataProxy_1.BaseDataProxy {
     }
     /**
      * 添加一个item
+     * 如果返回-1的话则添加失败
      * @param item
      */
     add(item) {
-        return this.data.push(Object.assign(Object.assign({ id: new Crypto_1.Crypto('', '').md5(Date.now() + Math.random().toString().split('.')[1]) }, item), { openNumber: 0 }));
+        if (!item.key) {
+            return '必须输入key';
+        }
+        if (!item.path) {
+            return '必须输入路径';
+        }
+        if (!(0, fs_1.statSync)(item.path, {
+            throwIfNoEntry: false,
+        })) {
+            return 'path不是一个文件或目录';
+        }
+        //如果存在一样key的话就添加错误
+        if (ArrayUtils_1.ArrayUtils.has(this.data, _ => {
+            return _.key == item.key;
+        })) {
+            return '不能存在同样的key';
+        }
+        //
+        let op = Object.assign(Object.assign({ id: new Crypto_1.Crypto('', '').md5(Date.now() + Math.random().toString().split('.')[1]) }, item), { openNumber: 0 });
+        this.data.push(op);
+        //
+        return op;
     }
 };
 ItemDP = __decorate([

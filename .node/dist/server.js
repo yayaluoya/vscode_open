@@ -64,7 +64,7 @@ function server(config_) {
     addApi(app);
     app.listen(config.port, () => {
         let url = `http://localhost:${config.port}`;
-        (0, openUrl_1.openUrl)(url);
+        ConfigDP_1.ConfigDP.instance.data.openBrowser && (0, openUrl_1.openUrl)(url);
         console.log(chalk_1.default.blue(`vscodeOpen服务已开启:\n${url}`));
     });
 }
@@ -108,16 +108,13 @@ function addApi(app) {
         res.send(new ResData_1.ResData());
     });
     app.post('/item', (req, res) => {
-        let item = req.body;
-        if (!(0, fs_1.statSync)(item.path, {
-            throwIfNoEntry: false,
-        })) {
-            res.send(new ResData_1.ResData().fail('path不是一个文件或目录'));
+        let result = ItemDP_1.ItemDP.instance.add(req.body);
+        if (typeof result == 'string') {
+            res.send(new ResData_1.ResData().fail(result));
             return;
         }
-        ItemDP_1.ItemDP.instance.add(item);
         //
-        res.send(new ResData_1.ResData(item, undefined, '添加成功'));
+        res.send(new ResData_1.ResData(result, undefined, '添加成功'));
     });
     app.delete('/item', (req, res) => {
         let id = req.body.id;

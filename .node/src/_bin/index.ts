@@ -65,6 +65,7 @@ switch (true) {
                         value: _,
                     };
                 }),
+                pageSize: 20,
             })
             .then(({ select }: { select: IItemD[] }) => {
                 select && select.length > 0 && vscodeOpen(select.map(_ => _.path));
@@ -85,22 +86,17 @@ switch (true) {
         }).map(_ => _.path));
         break;
     case Boolean(cmdOp.add):
-        if (!cmdOp.add[0]) {
-            console.log(chalk.red('必须输入key'));
-            break
-        }
-        if (!cmdOp.add[1]) {
-            console.log(chalk.red('必须输入path'));
-            break
-        }
-        let item = {
+        let result = ItemDP.instance.add({
             key: cmdOp.add[0],
             icon: '',
             title: '',
             path: cmdOp.add[1],
+        });
+        if (typeof result == 'string') {
+            console.log(chalk.red(result));
+            break;
         }
-        ItemDP.instance.add(item);
-        console.log(chalk.blue('添加成功'), item);
+        console.log(chalk.blue('添加成功'), result);
         break;
     case Boolean(cmdOp.remove):
         let keys2 = cmdOp.remove?.split(/[,，]/g);

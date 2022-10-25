@@ -69,7 +69,7 @@ export function server(config_: Partial<IConfig>) {
 
     app.listen(config.port, () => {
         let url = `http://localhost:${config.port}`;
-        openUrl(url);
+        ConfigDP.instance.data.openBrowser && openUrl(url);
         console.log(chalk.blue(`vscodeOpen服务已开启:\n${url}`))
     })
 }
@@ -115,16 +115,13 @@ function addApi(app: Express) {
         res.send(new ResData());
     })
     app.post('/item', (req, res) => {
-        let item: IItemD = req.body;
-        if (!statSync(item.path, {
-            throwIfNoEntry: false,
-        })) {
-            res.send(new ResData().fail('path不是一个文件或目录'));
+        let result = ItemDP.instance.add(req.body);
+        if (typeof result == 'string') {
+            res.send(new ResData().fail(result));
             return;
         }
-        ItemDP.instance.add(item);
         //
-        res.send(new ResData(item, undefined, '添加成功'));
+        res.send(new ResData(result, undefined, '添加成功'));
     })
     app.delete('/item', (req, res) => {
         let id = req.body.id;

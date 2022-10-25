@@ -10,9 +10,10 @@ export class ConfigDP extends BaseDataProxy<IConfig> {
     /** 单例 */
     static readonly instance: ConfigDP;
 
-    protected getNewData() {
+    protected getNewData(): IConfig {
         return {
             port: 3142,
+            openBrowser: true,
         };
     }
 }

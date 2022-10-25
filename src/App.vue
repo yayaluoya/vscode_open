@@ -46,15 +46,9 @@ export default defineComponent({
     const list = ref<NApi.IItemD[]>([]);
     const config = ref<NApi.IConfig>({
       port: 80,
+      openBrowser: true,
     });
     const filterInput = ref("");
-
-    function editConfig() {
-      ConfigAC.instance.edit(config.value).catch((e) => {
-        Mes.handleHttpCatch(e);
-        loadCofing();
-      });
-    }
 
     onMounted(() => {
       loadCofing();
@@ -73,6 +67,13 @@ export default defineComponent({
         list.value = data.sort((a, b) => {
           return b.openNumber - a.openNumber;
         });
+      });
+    }
+
+    function editConfig() {
+      ConfigAC.instance.edit(config.value).catch((e) => {
+        Mes.handleHttpCatch(e);
+        loadCofing();
       });
     }
 
@@ -179,14 +180,16 @@ export default defineComponent({
       });
     }
     function exportClick() {
+      let name = `vscodeOpenItemList@${new Date()
+        .toLocaleString()
+        .replace(/\//g, "-")
+        .replace(/:/g, "_")
+        .replace(/\s+/g, "_")}.json`;
       FileT.download(
         URL.createObjectURL(
-          new File(
-            [new Blob([JSON.stringify(list.value)])],
-            "vscodeOpenItemList.json"
-          )
+          new File([new Blob([JSON.stringify(list.value)])], name)
         ),
-        "vscodeOpenItemList.json"
+        name
       );
     }
 
@@ -222,7 +225,8 @@ export default defineComponent({
   <div class="home">
     <div class="content">
       <div class="nav">
-        <span>vscodeOpen</span>
+        <img src="./assets/vscodeLog.png" alt="" />
+        <span>Open</span>
         <span
           :class="{
             on: show == 'list',
@@ -270,11 +274,11 @@ export default defineComponent({
             </div>
           </div>
           <el-table border :data="list_" style="width: 100%">
-            <el-table-column prop="key" label="key" />
-            <el-table-column prop="icon" label="图标" width="100">
+            <el-table-column min-width="50px" prop="key" label="key" />
+            <el-table-column prop="icon" label="图标" width="60">
               <template #default="{ row }">
                 <el-image
-                  style="width: 75px; border-radius: 5px"
+                  style="width: 35px; border-radius: 5px"
                   :src="getFileUrl(row.icon)"
                   fit="cover"
                   :preview-src-list="[getFileUrl(row.icon)]"
@@ -283,8 +287,8 @@ export default defineComponent({
               </template>
             </el-table-column>
             <el-table-column prop="title" label="标题" />
-            <el-table-column prop="path" label="路径" />
-            <el-table-column prop="openNumber" width="90px" label="打开次数" />
+            <el-table-column show-overflow-tooltip prop="path" label="路径" />
+            <el-table-column prop="openNumber" width="95px" label="打开次数" />
             <el-table-column fixed="right" label="操作" width="130">
               <template #default="{ row }">
                 <el-button
@@ -315,7 +319,12 @@ export default defineComponent({
             </el-table-column>
           </el-table>
         </template>
-        <el-form v-if="show == 'config'" :model="config" label-width="120px">
+        <el-form
+          label-suffix="："
+          v-if="show == 'config'"
+          :model="config"
+          label-width="180px"
+        >
           <el-form-item label="端口号" prop="port">
             <div style="display: flex; flex-direction: column">
               <el-input-number
@@ -327,6 +336,12 @@ export default defineComponent({
               <span style="color: rgb(255 78 78)">重启后生效</span>
             </div>
           </el-form-item>
+          <el-form-item label="启动时是否打开浏览器" prop="openBrowser">
+            <div style="display: flex; flex-direction: column">
+              <el-switch v-model="config.openBrowser" @change="editConfig()" />
+              <span style="color: rgb(255 78 78)">重启后生效</span>
+            </div>
+          </el-form-item>
         </el-form>
       </div>
     </div>
@@ -335,7 +350,8 @@ export default defineComponent({
         ref="formEl"
         :model="formData"
         :rules="formDataRules"
-        label-width="60px"
+        label-width="80px"
+        label-suffix="："
       >
         <el-form-item label="key" prop="key">
           <el-input v-model="formData.key" placeholder="请输入key" />
@@ -397,22 +413,26 @@ export default defineComponent({
       > * {
         margin-right: 20px;
       }
-      > span:nth-child(1) {
+      > img {
+        height: 30px;
+        margin-right: 5px;
+      }
+      > span:nth-child(2) {
         font-size: 30px;
         font-weight: bold;
-        color: #409eff;
+        color: #0086d1;
       }
-      > span:nth-child(2),
-      > span:nth-child(3) {
+      > span:nth-child(3),
+      > span:nth-child(4) {
         font-size: 16px;
         color: gray;
         cursor: pointer;
         &:hover {
-          color: #2f495e;
+          color: #0086d1;
         }
         &.on {
           font-weight: bold;
-          color: #2f495e;
+          color: #0086d1;
           text-decoration: underline;
         }
       }
