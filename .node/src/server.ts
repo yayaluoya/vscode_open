@@ -85,7 +85,7 @@ function addApi(app: Express) {
     app.put('/config', (req, res) => {
         let data: Partial<IConfig> = req.body;
         for (let i in data) {
-            (i in ConfigDP.instance.data) && ((ConfigDP.instance.data as any)[i] = (data as any)[i]);
+            (ConfigDP.instance.data as any)[i] = (data as any)[i];
         }
         res.send(new ResData(null, undefined, '修改成功'));
     });

@@ -14,6 +14,7 @@ export class ConfigDP extends BaseDataProxy<IConfig> {
         return {
             port: 3142,
             openBrowser: true,
+            dark: false,
         };
     }
 }

@@ -6,4 +6,6 @@ export interface IConfig {
     port: number;
     /** 是否打开浏览器 */
     openBrowser: boolean;
+    /** 黑夜模块 */
+    dark: boolean;
 }

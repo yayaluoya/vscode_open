@@ -80,7 +80,7 @@ function addApi(app) {
     app.put('/config', (req, res) => {
         let data = req.body;
         for (let i in data) {
-            (i in ConfigDP_1.ConfigDP.instance.data) && (ConfigDP_1.ConfigDP.instance.data[i] = data[i]);
+            ConfigDP_1.ConfigDP.instance.data[i] = data[i];
         }
         res.send(new ResData_1.ResData(null, undefined, '修改成功'));
     });

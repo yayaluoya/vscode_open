@@ -5,6 +5,7 @@ import {
   onMounted,
   reactive,
   ref,
+  watchEffect,
 } from "@vue/runtime-core";
 import { ConfigAC } from "./api/ConfigAC";
 import { NApi } from "./_d/api";
@@ -16,6 +17,7 @@ import { FileT } from "yayaluoya-tool/dist/web/FileT";
 import { getFile } from "yayaluoya-tool/dist/web/getFile";
 import { FormInstance, FormRules } from "element-plus";
 import SecondConfirmation from "./components/SecondConfirmation.vue";
+import defIcon from "./assets/vscodeLog.png";
 import {
   Calendar,
   Search,
@@ -23,6 +25,7 @@ import {
   Download,
   Upload,
 } from "@element-plus/icons-vue";
+import { setTheme } from "./theme/index";
 
 const formData_: NApi.IItemD = {
   /** id */
@@ -47,6 +50,7 @@ export default defineComponent({
     const config = ref<NApi.IConfig>({
       port: 80,
       openBrowser: true,
+      dark: false,
     });
     const filterInput = ref("");
 
@@ -57,7 +61,7 @@ export default defineComponent({
 
     function loadCofing() {
       ConfigAC.instance.get().then((data) => {
-        for (let i in data) {
+        for (let i in config.value) {
           (config.value as any)[i] = (data as any)[i];
         }
       });
@@ -193,6 +197,10 @@ export default defineComponent({
       );
     }
 
+    watchEffect(() => {
+      setTheme(config.value.dark ? "dark" : "bright");
+    });
+
     return {
       getFileUrl: ComAC.getFileUrl,
       show,
@@ -216,6 +224,7 @@ export default defineComponent({
       CirclePlus,
       Upload,
       Download,
+      defIcon,
     };
   },
 });
@@ -225,22 +234,32 @@ export default defineComponent({
   <div class="home">
     <div class="content">
       <div class="nav">
-        <img src="./assets/vscodeLog.png" alt="" />
-        <span>Open</span>
-        <span
-          :class="{
-            on: show == 'list',
-          }"
-          @click="show = 'list'"
-          >列表</span
-        >
-        <span
-          :class="{
-            on: show == 'config',
-          }"
-          @click="show = 'config'"
-          >配置</span
-        >
+        <div class="left">
+          <img src="./assets/vscodeLog.png" alt="" />
+          <span>Open</span>
+          <span
+            :class="{
+              on: show == 'list',
+            }"
+            @click="show = 'list'"
+            >列表</span
+          >
+          <span
+            :class="{
+              on: show == 'config',
+            }"
+            @click="show = 'config'"
+            >配置</span
+          >
+        </div>
+        <div class="right">
+          <el-switch
+            v-model="config.dark"
+            @change="editConfig()"
+            active-text="黑夜"
+            inactive-text="白天"
+          />
+        </div>
       </div>
       <div class="content">
         <template v-if="show == 'list'">
@@ -278,10 +297,10 @@ export default defineComponent({
             <el-table-column prop="icon" label="图标" width="60">
               <template #default="{ row }">
                 <el-image
-                  style="width: 35px; border-radius: 5px"
-                  :src="getFileUrl(row.icon)"
+                  style="width: 30px; border-radius: 5px"
+                  :src="row.icon ? getFileUrl(row.icon) : defIcon"
                   fit="cover"
-                  :preview-src-list="[getFileUrl(row.icon)]"
+                  :preview-src-list="row.icon ? [getFileUrl(row.icon)] : []"
                   preview-teleported
                 />
               </template>
@@ -386,6 +405,37 @@ export default defineComponent({
   </div>
 </template>
 
+<style lang="scss">
+body {
+  background-color: var(--backgroundColor);
+  color: var(--color);
+  transition: all 0.2s;
+}
+
+.el-dialog {
+  > .el-dialog__header {
+    border-color: var(--borderColor) !important;
+    background-color: var(--backgroundColor);
+    transition: all 0.2s;
+
+    > .el-dialog__title {
+      color: var(--color);
+      transition: all 0.2s;
+    }
+  }
+
+  > .el-dialog__body {
+    background-color: var(--backgroundColor);
+  }
+
+  > .el-dialog__footer {
+    border-color: var(--borderColor) !important;
+    background-color: var(--backgroundColor);
+    transition: all 0.2s;
+  }
+}
+</style>
+
 <style scoped lang="scss">
 .home {
   width: 100%;
@@ -394,6 +444,7 @@ export default defineComponent({
   display: flex;
   flex-direction: row;
   justify-content: center;
+
   > .content {
     width: 1000px;
     display: flex;
@@ -403,37 +454,57 @@ export default defineComponent({
       display: flex;
       flex-direction: row;
       align-items: center;
+      justify-content: space-between;
       border: 1px solid #e6e9ee;
+      border-color: var(--borderColor);
       padding: 0 20px;
       width: 100%;
       box-sizing: border-box;
       border-radius: 12px;
       margin-bottom: 20px;
-      background-color: white;
-      > * {
-        margin-right: 20px;
-      }
-      > img {
-        height: 30px;
-        margin-right: 5px;
-      }
-      > span:nth-child(2) {
-        font-size: 30px;
-        font-weight: bold;
-        color: #0086d1;
-      }
-      > span:nth-child(3),
-      > span:nth-child(4) {
-        font-size: 16px;
-        color: gray;
-        cursor: pointer;
-        &:hover {
-          color: #0086d1;
+      background-color: var(--contentBackgroundColor);
+      transition: all 0.2s;
+      > .left {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        > * {
+          margin-right: 20px;
         }
-        &.on {
+        > img {
+          height: 30px;
+          margin-right: 5px;
+        }
+        > span:nth-child(2) {
+          font-size: 30px;
           font-weight: bold;
           color: #0086d1;
-          text-decoration: underline;
+        }
+        > span:nth-child(3),
+        > span:nth-child(4) {
+          font-size: 16px;
+          line-height: 16px;
+          color: gray;
+          cursor: pointer;
+          &:hover {
+            color: #0086d1;
+          }
+          &.on {
+            font-weight: bold;
+            color: #0086d1;
+            text-decoration: underline;
+          }
+        }
+      }
+      > .right {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        > span {
+          font-size: 16px;
+          color: gray;
+          margin-right: 5px;
+          line-height: 16px;
         }
       }
     }
@@ -443,12 +514,14 @@ export default defineComponent({
       align-items: center;
       flex-wrap: wrap;
       border: 1px solid #e6e9ee;
+      border-color: var(--borderColor);
       padding: 20px;
       width: 100%;
       box-sizing: border-box;
       border-radius: 12px;
       margin-bottom: 20px;
-      background-color: white;
+      background-color: var(--contentBackgroundColor);
+      transition: all 0.2s;
       > .top {
         display: flex;
         flex-direction: row;
@@ -461,6 +534,13 @@ export default defineComponent({
           display: flex;
           flex-direction: row;
           align-items: center;
+        }
+        > .left {
+          > .el-button {
+            :deep(.el-icon) {
+              color: white;
+            }
+          }
         }
       }
     }
