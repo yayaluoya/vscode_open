@@ -31,7 +31,7 @@ let cmdOp = getCmdOp<IOp &
     pro.option('-h --help')
         .option('-l --list')
         .option('-k --keys <keys>')
-        .option('-p --port')
+        .option('-p --port <port>')
         .option('-add --add <key...>')
         .option('-r --remove <keys>')
 });
