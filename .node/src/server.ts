@@ -180,4 +180,16 @@ function addApi(app: Express) {
             res.end();
         }
     })
+    app.post('/vscode_open', (req, res) => {
+        if (!req.body.path) {
+            return new ResData().fail('必须输入路径');
+        }
+        if (!statSync(req.body.path, {
+            throwIfNoEntry: false,
+        })) {
+            return new ResData().fail('这个路径不存在');
+        }
+        vscodeOpen(req.body.path);
+        return new ResData(true);
+    });
 }

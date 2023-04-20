@@ -18,4 +18,12 @@ export class ComAC extends BaseAC {
         });
         return url.href;
     }
+
+    /** 用vscode打开某个路径 */
+    vscode_open(path: TArraify<string>) {
+        return this.postData({
+            url: '/vscode_open',
+            data: { path },
+        });
+    }
 }

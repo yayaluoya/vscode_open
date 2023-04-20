@@ -174,4 +174,16 @@ function addApi(app) {
             res.end();
         }
     });
+    app.post('/vscode_open', (req, res) => {
+        if (!req.body.path) {
+            return new ResData_1.ResData().fail('必须输入路径');
+        }
+        if (!(0, fs_1.statSync)(req.body.path, {
+            throwIfNoEntry: false,
+        })) {
+            return new ResData_1.ResData().fail('这个路径不存在');
+        }
+        (0, vscodeOpen_1.vscodeOpen)(req.body.path);
+        return new ResData_1.ResData(true);
+    });
 }

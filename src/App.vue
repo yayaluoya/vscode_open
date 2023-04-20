@@ -2,6 +2,7 @@
 import {
   computed,
   defineComponent,
+  onDeactivated,
   onMounted,
   reactive,
   ref,
@@ -26,6 +27,7 @@ import {
   Upload,
 } from "@element-plus/icons-vue";
 import { setTheme } from "./theme/index";
+import { KeydownE } from "./event/KeydownE";
 
 const formData_: NApi.IItemD & {
   pathStr: string;
@@ -56,10 +58,20 @@ export default defineComponent({
       dark: false,
     });
     const filterInput = ref("");
+    const inputRef = ref<HTMLInputElement>();
 
     onMounted(() => {
       loadCofing();
       loadList();
+      KeydownE.instance.on("keydown", ctx, (e: KeyboardEvent) => {
+        if (/^Enter$/i.test(e.key)) {
+          inputRef.value?.focus();
+        }
+      });
+    });
+
+    onDeactivated(() => {
+      KeydownE.instance.off("keydown", ctx);
     });
 
     function loadCofing() {
@@ -107,6 +119,11 @@ export default defineComponent({
       key: {
         required: true,
         message: "必须输入key",
+        trigger: "blur",
+      },
+      title: {
+        required: true,
+        message: "必须输入标题",
         trigger: "blur",
       },
       pathStr: {
@@ -211,6 +228,10 @@ export default defineComponent({
       );
     }
 
+    function vscodeOpen(path: string) {
+      ComAC.instance.vscode_open(path);
+    }
+
     watchEffect(() => {
       setTheme(config.value.dark ? "dark" : "bright");
     });
@@ -239,6 +260,8 @@ export default defineComponent({
       Upload,
       Download,
       defIcon,
+      vscodeOpen,
+      inputRef,
     };
   },
 });
@@ -292,6 +315,7 @@ export default defineComponent({
                 placeholder="输入筛选"
                 :prefix-icon="Search"
                 clearable
+                ref="inputRef"
               />
             </div>
             <div class="right">
@@ -307,11 +331,17 @@ export default defineComponent({
             </div>
           </div>
           <el-table border :data="list_" style="width: 100%">
-            <el-table-column min-width="50px" prop="key" label="key" />
+            <el-table-column
+              show-overflow-tooltip
+              width="120px"
+              prop="key"
+              label="key"
+            />
             <el-table-column prop="icon" label="图标" width="60">
               <template #default="{ row }">
                 <el-image
-                  style="width: 30px; border-radius: 5px"
+                  @click="open(row)"
+                  style="width: 30px; cursor: pointer"
                   :src="row.icon ? getFileUrl(row.icon) : defIcon"
                   fit="cover"
                   :preview-src-list="row.icon ? [getFileUrl(row.icon)] : []"
@@ -321,34 +351,30 @@ export default defineComponent({
             </el-table-column>
             <el-table-column prop="title" label="标题">
               <template #default="{ row }">
-                <span style="font-weight: bold; color: #0080cf">{{
-                  row.title
-                }}</span>
+                <span
+                  class="vscode_item"
+                  @click="open(row)"
+                  style="color: #0080cf"
+                  >{{ row.title }}</span
+                >
               </template>
             </el-table-column>
             <el-table-column show-overflow-tooltip prop="path" label="路径列表">
               <template #default="{ row }">
                 <div style="display: flex; flex-direction: column">
                   <span
-                    class="text-ellipsis"
+                    class="vscode_item text-ellipsis"
                     v-for="(item, index) in row.paths"
                     :key="index"
+                    @click="vscodeOpen(item)"
                     >{{ item }}</span
                   >
                 </div>
               </template>
             </el-table-column>
-            <el-table-column prop="openNumber" width="95px" label="打开次数" />
-            <el-table-column fixed="right" label="操作" width="130">
+            <el-table-column prop="openNumber" width="90px" label="打开次数" />
+            <el-table-column fixed="right" label="操作" width="100">
               <template #default="{ row }">
-                <el-button
-                  link
-                  type="success"
-                  size="small"
-                  @click="open(row)"
-                  style="font-weight: bold"
-                  >打开</el-button
-                >
                 <el-button
                   style="margin-left: 5px"
                   link
@@ -579,6 +605,12 @@ body {
             }
           }
         }
+      }
+    }
+    .vscode_item {
+      cursor: pointer;
+      &:hover {
+        font-weight: bold;
       }
     }
   }
