@@ -16,7 +16,6 @@ const ItemDP_1 = require("./localData/ItemDP");
 const fs_1 = require("fs");
 const vscodeOpen_1 = require("./tool/vscodeOpen");
 const ArrayUtils_1 = require("yayaluoya-tool/dist/ArrayUtils");
-const URLT_1 = require("yayaluoya-tool/dist/http/URLT");
 const openUrl_1 = require("./tool/openUrl");
 /**
  * 启动服务
@@ -91,21 +90,15 @@ function addApi(app) {
      * 项目相关
      */
     app.post('/itemOpen', (req, res) => {
-        let path = req.body.path;
-        if (!(0, fs_1.statSync)(path, {
-            throwIfNoEntry: false,
-        })) {
-            res.send(new ResData_1.ResData().fail('找不到这个目录或文件'));
-            return;
-        }
-        (0, vscodeOpen_1.vscodeOpen)(path);
+        let item = req.body;
+        (0, vscodeOpen_1.vscodeOpen)(item.paths);
         let onItem = ItemDP_1.ItemDP.instance.data.find(_ => {
-            return URLT_1.URLT.contrast(_.path, path);
+            return _.key == item.key;
         });
         if (onItem) {
             onItem.openNumber = (onItem.openNumber || 0) + 1;
         }
-        res.send(new ResData_1.ResData());
+        res.send(new ResData_1.ResData(true));
     });
     app.post('/item', (req, res) => {
         let result = ItemDP_1.ItemDP.instance.add(req.body);
@@ -142,10 +135,24 @@ function addApi(app) {
             res.send(new ResData_1.ResData().fail('一个项目都没有呢'));
             return;
         }
+        /**
+         * TODO 兼容处理
+         * path 到 paths 的兼容
+         */
         for (let o of itemList) {
-            if (!ArrayUtils_1.ArrayUtils.has(ItemDP_1.ItemDP.instance.data, _ => {
-                return _.id == o.id;
-            })) {
+            if (o.path) {
+                o.paths = [o.path];
+                delete o.path;
+            }
+        }
+        //
+        for (let o of itemList) {
+            let i = ItemDP_1.ItemDP.instance.data.findIndex(_ => _.key == o.key);
+            // 找到就替换，没找到就添加
+            if (i >= 0) {
+                ItemDP_1.ItemDP.instance.data[i] = o;
+            }
+            else {
                 ItemDP_1.ItemDP.instance.data.push(o);
             }
         }

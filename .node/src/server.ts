@@ -98,21 +98,15 @@ function addApi(app: Express) {
      * 项目相关
      */
     app.post('/itemOpen', (req, res) => {
-        let path: string = req.body.path;
-        if (!statSync(path, {
-            throwIfNoEntry: false,
-        })) {
-            res.send(new ResData().fail('找不到这个目录或文件'));
-            return;
-        }
-        vscodeOpen(path);
+        let item: IItemD = req.body;
+        vscodeOpen(item.paths);
         let onItem = ItemDP.instance.data.find(_ => {
-            return URLT.contrast(_.path, path);
+            return _.key == item.key;
         });
         if (onItem) {
             onItem.openNumber = (onItem.openNumber || 0) + 1;
         }
-        res.send(new ResData());
+        res.send(new ResData(true));
     })
     app.post('/item', (req, res) => {
         let result = ItemDP.instance.add(req.body);
@@ -149,10 +143,23 @@ function addApi(app: Express) {
             res.send(new ResData().fail('一个项目都没有呢'));
             return;
         }
+        /**
+         * TODO 兼容处理
+         * path 到 paths 的兼容
+         */
+        for (let o of itemList as any) {
+            if (o.path) {
+                o.paths = [o.path];
+                delete o.path;
+            }
+        }
+        //
         for (let o of itemList) {
-            if (!ArrayUtils.has(ItemDP.instance.data, _ => {
-                return _.id == o.id;
-            })) {
+            let i = ItemDP.instance.data.findIndex(_ => _.key == o.key);
+            // 找到就替换，没找到就添加
+            if (i >= 0) {
+                ItemDP.instance.data[i] = o;
+            } else {
                 ItemDP.instance.data.push(o);
             }
         }

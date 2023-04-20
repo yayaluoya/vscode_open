@@ -16,8 +16,8 @@ export interface IItemD {
     icon: string;
     /** 标题 */
     title: string;
-    /** 项目路径 */
-    path: string;
+    /** 项目路径列表 */
+    paths: string[];
     /** 打开次数 */
     openNumber: number;
 }
@@ -43,13 +43,15 @@ export class ItemDP extends BaseDataProxy<IItemD[]> {
         if (!item.key) {
             return '必须输入key';
         }
-        if (!item.path) {
+        if (!item.paths || item.paths.length <= 0) {
             return '必须输入路径';
         }
-        if (!statSync(item.path, {
-            throwIfNoEntry: false,
-        })) {
-            return 'path不是一个文件或目录';
+        for (let path of item.paths) {
+            if (!statSync(path, {
+                throwIfNoEntry: false,
+            })) {
+                return `找不到路径:${path}`;
+            }
         }
         //如果存在一样key的话就添加错误
         if (ArrayUtils.has(this.data, _ => {

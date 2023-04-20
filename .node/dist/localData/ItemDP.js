@@ -28,13 +28,15 @@ let ItemDP = class ItemDP extends BaseDataProxy_1.BaseDataProxy {
         if (!item.key) {
             return '必须输入key';
         }
-        if (!item.path) {
+        if (!item.paths || item.paths.length <= 0) {
             return '必须输入路径';
         }
-        if (!(0, fs_1.statSync)(item.path, {
-            throwIfNoEntry: false,
-        })) {
-            return 'path不是一个文件或目录';
+        for (let path of item.paths) {
+            if (!(0, fs_1.statSync)(path, {
+                throwIfNoEntry: false,
+            })) {
+                return `找不到路径:${path}`;
+            }
         }
         //如果存在一样key的话就添加错误
         if (ArrayUtils_1.ArrayUtils.has(this.data, _ => {

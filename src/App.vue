@@ -27,17 +27,20 @@ import {
 } from "@element-plus/icons-vue";
 import { setTheme } from "./theme/index";
 
-const formData_: NApi.IItemD = {
+const formData_: NApi.IItemD & {
+  pathStr: string;
+} = {
   /** id */
   id: undefined,
-  /** 一个简称，可以重复 */
+  /** 唯一的key */
   key: "",
   /** 图标，本地文件路径 */
   icon: "",
   /** 标题 */
   title: "",
   /** 项目路径 */
-  path: "",
+  paths: [],
+  pathStr: "",
   /** 项目打开次数 */
   openNumber: 0,
 };
@@ -83,7 +86,7 @@ export default defineComponent({
 
     function open(item: NApi.IItemD) {
       ItemAC.instance
-        .open(item.path)
+        .open(item)
         .catch(Mes.handleHttpCatch)
         .then(() => {
           item.openNumber++;
@@ -93,18 +96,20 @@ export default defineComponent({
     const list_ = computed(() => {
       let reg = new RegExp(filterInput.value, "i");
       return list.value.filter((_) => {
-        return reg.test(_.key) || reg.test(_.title) || reg.test(_.path);
+        return (
+          reg.test(_.key) || reg.test(_.title) || reg.test(_.paths.join(""))
+        );
       });
     });
 
-    const formData = ref<NApi.IItemD>(ObjectUtils.clone2(formData_));
+    const formData = ref(ObjectUtils.clone2(formData_));
     const formDataRules = reactive<FormRules>({
       key: {
         required: true,
         message: "必须输入key",
         trigger: "blur",
       },
-      path: {
+      pathStr: {
         required: true,
         message: "必须输入路径",
         trigger: "blur",
@@ -121,6 +126,7 @@ export default defineComponent({
         for (let i in formData_) {
           (formData.value as any)[i] = item[i];
         }
+        formData.value.pathStr = formData.value.paths.join("\n");
       } else {
         formData.value = ObjectUtils.clone2(formData_);
       }
@@ -132,12 +138,20 @@ export default defineComponent({
       formEl.value.validate().then(() => {
         let p = Promise.resolve();
         submitLoading.value = true;
-        if (formData.value.id) {
-          p = ItemAC.instance.edit(formData.value).then(() => {
+        let op: NApi.IItemD = {
+          id: formData.value.id,
+          key: formData.value.key,
+          icon: formData.value.icon,
+          title: formData.value.title,
+          paths: formData.value.pathStr.replace(/ +/, "").split(/[\n;]+/g),
+          openNumber: formData.value.openNumber,
+        };
+        if (op.id) {
+          p = ItemAC.instance.edit(op).then(() => {
             Mes.success("编辑成功");
           });
         } else {
-          p = ItemAC.instance.add(formData.value).then(() => {
+          p = ItemAC.instance.add(op).then(() => {
             Mes.success("添加成功");
           });
         }
@@ -305,8 +319,25 @@ export default defineComponent({
                 />
               </template>
             </el-table-column>
-            <el-table-column prop="title" label="标题" />
-            <el-table-column show-overflow-tooltip prop="path" label="路径" />
+            <el-table-column prop="title" label="标题">
+              <template #default="{ row }">
+                <span style="font-weight: bold; color: #0080cf">{{
+                  row.title
+                }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column show-overflow-tooltip prop="path" label="路径列表">
+              <template #default="{ row }">
+                <div style="display: flex; flex-direction: column">
+                  <span
+                    class="text-ellipsis"
+                    v-for="(item, index) in row.paths"
+                    :key="index"
+                    >{{ item }}</span
+                  >
+                </div>
+              </template>
+            </el-table-column>
             <el-table-column prop="openNumber" width="95px" label="打开次数" />
             <el-table-column fixed="right" label="操作" width="130">
               <template #default="{ row }">
@@ -376,13 +407,19 @@ export default defineComponent({
           <el-input v-model="formData.key" placeholder="请输入key" />
         </el-form-item>
         <el-form-item label="图标" prop="icon">
-          <el-input v-model="formData.icon" placeholder="请输入图标" />
+          <el-input v-model="formData.icon" placeholder="请输入图标文件路径" />
         </el-form-item>
         <el-form-item label="标题" prop="title">
           <el-input v-model="formData.title" placeholder="请输入标题" />
         </el-form-item>
-        <el-form-item label="路径" prop="path">
-          <el-input v-model="formData.path" placeholder="请输入路径" />
+        <el-form-item label="路径" prop="pathStr">
+          <el-input
+            v-model="formData.pathStr"
+            :rows="6"
+            type="textarea"
+            placeholder="请输入路径"
+          />
+          <span>多个路径用换行符或;符号分隔</span>
         </el-form-item>
       </el-form>
       <template #footer>

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build-w": "tsc -w"
+    "build-w": "tsc -w",
+    "dev": "nodemon ./dist/_bin/index.js --watch ./dist/**"
   },
   "author": "",
   "license": "ISC"

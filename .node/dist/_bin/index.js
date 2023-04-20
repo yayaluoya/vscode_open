@@ -33,7 +33,7 @@ switch (true) {
         console.log(chalk_1.default.green('   -p --port ') + chalk_1.default.gray('指定用哪个端口启动'));
         console.log(chalk_1.default.green('   -l --list ') + chalk_1.default.gray('显示项目列表，可以选择并打开具体项目'));
         console.log(chalk_1.default.green('   -k --keys <keys> ') + chalk_1.default.gray('直接打开哪些项目，多个项目用,，号分隔'));
-        console.log(chalk_1.default.green('   -add --add <key> <path> ') + chalk_1.default.gray('添加一个项目<key> 该项目的key <path> 该项目的本地路径'));
+        console.log(chalk_1.default.green('   -add --add <key> <paths> ') + chalk_1.default.gray('添加一个项目，<key>：该项目的key，<paths>：该项目的本地路径列表，多个用,，号分隔'));
         console.log(chalk_1.default.green('   -r --remove <keys> ') + chalk_1.default.gray('删除项目，多个项目用,，号分隔'));
         break;
     case cmdOp.list:
@@ -45,14 +45,17 @@ switch (true) {
             message: '项目列表-按空格键选择，按enter键确认:',
             choices: list.map(_ => {
                 return {
-                    name: `${_.key} ${_.title} ${_.path}`,
+                    name: `${_.key} ${_.title} ${_.paths.join(',')}`,
                     value: _,
                 };
             }),
             pageSize: 20,
         })
             .then(({ select }) => {
-            select && select.length > 0 && (0, vscodeOpen_1.vscodeOpen)(select.map(_ => _.path));
+            select && select.length > 0 && (0, vscodeOpen_1.vscodeOpen)(select.reduce((a, b) => {
+                a.push(...b.paths);
+                return a;
+            }, []));
         })
             .catch((error) => {
             console.log(chalk_1.default.red('出错了'), error);
@@ -67,14 +70,17 @@ switch (true) {
         //直接打开项目
         (0, vscodeOpen_1.vscodeOpen)(ItemDP_1.ItemDP.instance.data.filter(_ => {
             return keys.includes(_.key);
-        }).map(_ => _.path));
+        }).reduce((a, b) => {
+            a.push(...b.paths);
+            return a;
+        }, []));
         break;
     case Boolean(cmdOp.add):
         let result = ItemDP_1.ItemDP.instance.add({
             key: cmdOp.add[0],
             icon: '',
             title: '',
-            path: cmdOp.add[1],
+            paths: cmdOp.add[0].split(/[,，]/g),
         });
         if (typeof result == 'string') {
             console.log(chalk_1.default.red(result));

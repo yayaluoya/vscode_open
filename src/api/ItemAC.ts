@@ -10,10 +10,10 @@ export class ItemAC extends BaseAC {
     static readonly instance: ItemAC;
 
     /** 打开项目 */
-    open(path: string) {
+    open(item: NApi.IItemD) {
         return this.postData({
             url: '/itemOpen',
-            data: { path },
+            data: item,
         });
     }
     /** 添加项目 */
