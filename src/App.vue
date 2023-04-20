@@ -64,7 +64,7 @@ export default defineComponent({
       loadCofing();
       loadList();
       KeydownE.instance.on("keydown", ctx, (e: KeyboardEvent) => {
-        if (/^Enter$/i.test(e.key)) {
+        if (e.ctrlKey && /^Enter$/i.test(e.key)) {
           inputRef.value?.focus();
         }
       });
