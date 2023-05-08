@@ -1,6 +1,6 @@
-import { BaseAC } from "./BaseAC";
-import { instanceTool } from "yayaluoya-tool/dist/instanceTool";
-import { URLT } from "yayaluoya-tool/dist/http/URLT";
+import {BaseAC} from "./BaseAC";
+import {instanceTool} from "yayaluoya-tool/dist/instanceTool";
+import {URLT} from "yayaluoya-tool/dist/http/URLT";
 
 @instanceTool()
 export class ComAC extends BaseAC {
@@ -8,8 +8,8 @@ export class ComAC extends BaseAC {
 
     /**
      * 获取文件路径
-     * @param str 
-     * @returns 
+     * @param str
+     * @returns
      */
     static getFileUrl(str: string) {
         let url = new URLT(URLT.join(import.meta.env.VITE_BASE_API, '/file'));
@@ -19,11 +19,15 @@ export class ComAC extends BaseAC {
         return url.href;
     }
 
-    /** 用vscode打开某个路径 */
-    vscode_open(path: TArraify<string>) {
+    /**
+     * 打开一个项目路径
+     * @param path
+     * @param type
+     */
+    open_item_path(path: TArraify<string>, type?: ComN.openType) {
         return this.postData({
-            url: '/vscode_open',
-            data: { path },
+            url: '/open_item_path',
+            data: {path, type},
         });
     }
 }

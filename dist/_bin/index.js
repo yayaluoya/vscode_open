@@ -8,7 +8,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const getCmdOp_1 = require("yayaluoya-tool/dist/node/getCmdOp");
 const chalk_1 = __importDefault(require("chalk"));
 const server_1 = require("../server");
-const vscodeOpen_1 = require("../tool/vscodeOpen");
+const openItem_1 = require("../tool/openItem");
 const ItemDP_1 = require("../localData/ItemDP");
 const packageJSON = require('../../package.json');
 const inquirer_1 = __importDefault(require("inquirer"));
@@ -52,10 +52,11 @@ switch (true) {
             pageSize: 20,
         })
             .then(({ select }) => {
-            select && select.length > 0 && (0, vscodeOpen_1.vscodeOpen)(select.reduce((a, b) => {
-                a.push(...b.paths);
-                return a;
-            }, []));
+            if (select && select.length > 0) {
+                select.forEach((item) => {
+                    (0, openItem_1.openItem)(item.paths, item.openType);
+                });
+            }
         })
             .catch((error) => {
             console.log(chalk_1.default.red('出错了'), error);
@@ -68,12 +69,11 @@ switch (true) {
             break;
         }
         //直接打开项目
-        (0, vscodeOpen_1.vscodeOpen)(ItemDP_1.ItemDP.instance.data.filter(_ => {
+        ItemDP_1.ItemDP.instance.data.filter(_ => {
             return keys.includes(_.key);
-        }).reduce((a, b) => {
-            a.push(...b.paths);
-            return a;
-        }, []));
+        }).forEach((item) => {
+            (0, openItem_1.openItem)(item.paths, item.openType);
+        });
         break;
     case Boolean(cmdOp.add):
         let result = ItemDP_1.ItemDP.instance.add({

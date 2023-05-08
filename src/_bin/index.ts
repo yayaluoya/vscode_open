@@ -1,12 +1,13 @@
 #!/usr/bin/env node
-import { getCmdOp, IOp as IOp_ } from "yayaluoya-tool/dist/node/getCmdOp";
+import {getCmdOp, IOp as IOp_} from "yayaluoya-tool/dist/node/getCmdOp";
 import chalk from "chalk";
-import { server } from "../server";
-import { vscodeOpen } from "../tool/vscodeOpen";
-import { ItemDP } from "../localData/ItemDP";
+import {server} from "../server";
+import {openItem} from "../tool/openItem";
+import {ItemDP} from "../localData/ItemDP";
+
 const packageJSON = require('../../package.json');
 import inquirer from 'inquirer';
-import { ArrayUtils } from "yayaluoya-tool/dist/ArrayUtils";
+import {ArrayUtils} from "yayaluoya-tool/dist/ArrayUtils";
 
 interface IOp extends IOp_ {
     /** 帮助 */
@@ -66,11 +67,12 @@ switch (true) {
                 }),
                 pageSize: 20,
             })
-            .then(({ select }: { select: ComN.IItemD[] }) => {
-                select && select.length > 0 && vscodeOpen(select.reduce<string[]>((a, b) => {
-                    a.push(...b.paths);
-                    return a;
-                }, []));
+            .then(({select}: { select: ComN.IItemD[] }) => {
+                if (select && select.length > 0) {
+                    select.forEach((item) => {
+                        openItem(item.paths, item.openType);
+                    });
+                }
             })
             .catch((error) => {
                 console.log(chalk.red('出错了'), error);
@@ -83,12 +85,11 @@ switch (true) {
             break;
         }
         //直接打开项目
-        vscodeOpen(ItemDP.instance.data.filter(_ => {
+        ItemDP.instance.data.filter(_ => {
             return keys.includes(_.key);
-        }).reduce<string[]>((a, b) => {
-            a.push(...b.paths);
-            return a;
-        }, []));
+        }).forEach((item) => {
+            openItem(item.paths, item.openType);
+        });
         break;
     case Boolean(cmdOp.add):
         let result = ItemDP.instance.add({

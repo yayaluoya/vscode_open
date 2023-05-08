@@ -1,6 +1,6 @@
 {
   "name": "vscode_open",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "一个方便管理vscode项目的工具",
   "main": "index.js",
   "scripts": {

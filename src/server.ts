@@ -1,20 +1,20 @@
-import { ObjectUtils } from "yayaluoya-tool/dist/obj/ObjectUtils";
-import { ConfigDP } from "./localData/ConfigDP";
-import { ConfigManager } from "./config/ConfigManager";
-import express, { Express } from "express";
-import { ResData } from "yayaluoya-tool/dist/http/ResData";
-import { PathManager } from "./manager/PathManager";
+import {ObjectUtils} from "yayaluoya-tool/dist/obj/ObjectUtils";
+import {ConfigDP} from "./localData/ConfigDP";
+import {ConfigManager} from "./config/ConfigManager";
+import express, {Express} from "express";
+import {ResData} from "yayaluoya-tool/dist/http/ResData";
+import {PathManager} from "./manager/PathManager";
 import serveStatic from "serve-static";
 import chalk from "chalk";
-import { ItemDP } from "./localData/ItemDP";
-import { createReadStream, statSync } from "fs";
-import { vscodeOpen } from "./tool/vscodeOpen";
-import { ArrayUtils } from "yayaluoya-tool/dist/ArrayUtils";
-import { openUrl } from "./tool/openUrl";
+import {ItemDP} from "./localData/ItemDP";
+import {createReadStream, statSync} from "fs";
+import {openItem} from "./tool/openItem";
+import {ArrayUtils} from "yayaluoya-tool/dist/ArrayUtils";
+import {openUrl} from "./tool/openUrl";
 
 /**
  * 启动服务
- * @param config 一个临时的config
+ * @param config_
  */
 export function server(config_: Partial<ComN.IConfig>) {
     let config = ObjectUtils.clone2(ConfigDP.instance.data);
@@ -31,7 +31,7 @@ export function server(config_: Partial<ComN.IConfig>) {
     const app = express()
 
     app.use(express.json()) // for parsing application/json
-    app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+    app.use(express.urlencoded({extended: true})) // for parsing application/x-www-form-urlencoded
 
     //添加web资源代理
     app.use(
@@ -74,10 +74,10 @@ export function server(config_: Partial<ComN.IConfig>) {
 
 /**
  * 添加api
- * @param app 
+ * @param app
  */
 function addApi(app: Express) {
-    /** 
+    /**
      * 配置文件
      */
     app.put('/config', (req, res) => {
@@ -89,7 +89,7 @@ function addApi(app: Express) {
     });
     app.get('/config', (req, res) => {
         res.send(new ResData(ConfigDP.instance.data));
-    })
+    });
 
 
     /**
@@ -97,7 +97,7 @@ function addApi(app: Express) {
      */
     app.post('/itemOpen', (req, res) => {
         let item: ComN.IItemD = req.body;
-        vscodeOpen(item.paths);
+        openItem(item.paths, item.openType);
         let onItem = ItemDP.instance.data.find(_ => {
             return _.key == item.key;
         });
@@ -105,7 +105,7 @@ function addApi(app: Express) {
             onItem.openNumber = (onItem.openNumber || 0) + 1;
         }
         res.send(new ResData(true));
-    })
+    });
     app.post('/item', (req, res) => {
         let result = ItemDP.instance.add(req.body);
         if (typeof result == 'string') {
@@ -114,12 +114,12 @@ function addApi(app: Express) {
         }
         //
         res.send(new ResData(result, undefined, '添加成功'));
-    })
+    });
     app.delete('/item', (req, res) => {
         let id = req.body.id;
         ArrayUtils.eliminate(ItemDP.instance.data, _ => _.id == id);
         res.send(new ResData(null, undefined, '删除成功'));
-    })
+    });
     app.put('/item', (req, res) => {
         let item: ComN.IItemD = req.body;
         let onItem = ItemDP.instance.data.find(_ => _.id == item.id);
@@ -134,7 +134,7 @@ function addApi(app: Express) {
     });
     app.get('/item', (req, res) => {
         res.send(new ResData(ItemDP.instance.data));
-    })
+    });
     app.post('/itemImport', (req, res) => {
         let itemList = req.body as ComN.IItemD[];
         if (itemList.length <= 0) {
@@ -162,7 +162,7 @@ function addApi(app: Express) {
             }
         }
         res.send(new ResData(null, undefined, '导入成功'));
-    })
+    });
 
     /**
      * 其它
@@ -177,8 +177,10 @@ function addApi(app: Express) {
             res.writeHead(404);
             res.end();
         }
-    })
-    app.post('/vscode_open', (req, res) => {
+    });
+
+    // 打开一个项目路径
+    app.post('/open_item_path', (req, res) => {
         if (!req.body.path) {
             return new ResData().fail('必须输入路径');
         }
@@ -187,7 +189,7 @@ function addApi(app: Express) {
         })) {
             return new ResData().fail('这个路径不存在');
         }
-        vscodeOpen(req.body.path);
+        openItem(req.body.path, req.body.type);
         return new ResData(true);
     });
 }

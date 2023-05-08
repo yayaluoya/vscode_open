@@ -2,6 +2,9 @@
  * 公共命名空间
  */
 namespace ComN {
+    // 打卡方式
+    type openType = 'vscode' | 'webStorm';
+
     /**
      * 项目配置
      */
@@ -30,5 +33,7 @@ namespace ComN {
         paths: string[];
         /** 打开次数 */
         openNumber: number;
+        /** 打卡方式 */
+        openType?: openType;
     }
 }

@@ -14,12 +14,12 @@ const serve_static_1 = __importDefault(require("serve-static"));
 const chalk_1 = __importDefault(require("chalk"));
 const ItemDP_1 = require("./localData/ItemDP");
 const fs_1 = require("fs");
-const vscodeOpen_1 = require("./tool/vscodeOpen");
+const openItem_1 = require("./tool/openItem");
 const ArrayUtils_1 = require("yayaluoya-tool/dist/ArrayUtils");
 const openUrl_1 = require("./tool/openUrl");
 /**
  * 启动服务
- * @param config 一个临时的config
+ * @param config_
  */
 function server(config_) {
     let config = ObjectUtils_1.ObjectUtils.clone2(ConfigDP_1.ConfigDP.instance.data);
@@ -91,7 +91,7 @@ function addApi(app) {
      */
     app.post('/itemOpen', (req, res) => {
         let item = req.body;
-        (0, vscodeOpen_1.vscodeOpen)(item.paths);
+        (0, openItem_1.openItem)(item.paths, item.openType);
         let onItem = ItemDP_1.ItemDP.instance.data.find(_ => {
             return _.key == item.key;
         });
@@ -174,7 +174,8 @@ function addApi(app) {
             res.end();
         }
     });
-    app.post('/vscode_open', (req, res) => {
+    // 打开一个项目路径
+    app.post('/open_item_path', (req, res) => {
         if (!req.body.path) {
             return new ResData_1.ResData().fail('必须输入路径');
         }
@@ -183,7 +184,7 @@ function addApi(app) {
         })) {
             return new ResData_1.ResData().fail('这个路径不存在');
         }
-        (0, vscodeOpen_1.vscodeOpen)(req.body.path);
+        (0, openItem_1.openItem)(req.body.path, req.body.type);
         return new ResData_1.ResData(true);
     });
 }
