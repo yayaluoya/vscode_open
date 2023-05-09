@@ -1,5 +1,5 @@
-import { BaseAC } from "./BaseAC";
-import { instanceTool } from "yayaluoya-tool/dist/instanceTool";
+import { BaseAC } from './BaseAC';
+import { instanceTool } from 'yayaluoya-tool/dist/instanceTool';
 
 /**
  * 项目接口

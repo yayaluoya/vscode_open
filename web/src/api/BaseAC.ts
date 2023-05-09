@@ -1,7 +1,7 @@
-import { AxiosResponse, AxiosRequestConfig } from "axios";
-import { ResData } from "yayaluoya-tool/dist/http/ResData";
-import { BaseApiCon } from "yayaluoya-tool/dist/node/BaseApiCon";
-import { HttpStatus } from "yayaluoya-tool/src/http/HttpStatus";
+import { AxiosResponse, AxiosRequestConfig } from 'axios';
+import { ResData } from 'yayaluoya-tool/dist/http/ResData';
+import { BaseApiCon } from 'yayaluoya-tool/dist/node/BaseApiCon';
+import { HttpStatus } from 'yayaluoya-tool/src/http/HttpStatus';
 /**
  * 基类api
  */
@@ -19,13 +19,10 @@ export class BaseAC extends BaseApiCon {
         return this.requestData<D>(op).then(({ data }) => data);
     }
 
-
     /**
      * get请求获取数据
-     * @param _op 请求配置 
-     * @param data 
-     * @param headers 
-     * @returns 
+     * @param _op 请求配置
+     * @returns
      */
     getData<D>(_op: AxiosRequestConfig) {
         return this.requestDataData<D>({
@@ -35,10 +32,8 @@ export class BaseAC extends BaseApiCon {
     }
     /**
      * post请求获取数据
-     * @param _op 请求配置 
-     * @param data 
-     * @param headers 
-     * @returns 
+     * @param _op 请求配置
+     * @returns
      */
     postData<D>(_op: AxiosRequestConfig) {
         return this.requestDataData<D>({
@@ -48,10 +43,8 @@ export class BaseAC extends BaseApiCon {
     }
     /**
      * put请求获取数据
-     * @param _op 请求配置 
-     * @param data 
-     * @param headers 
-     * @returns 
+     * @param _op 请求配置
+     * @returns
      */
     putData<D>(_op: AxiosRequestConfig) {
         return this.requestDataData<D>({
@@ -61,10 +54,8 @@ export class BaseAC extends BaseApiCon {
     }
     /**
      * delete请求获取数据
-     * @param _op 请求配置 
-     * @param data 
-     * @param headers 
-     * @returns 
+     * @param _op 请求配置
+     * @returns
      */
     deleteData<D>(_op: AxiosRequestConfig) {
         return this.requestDataData<D>({

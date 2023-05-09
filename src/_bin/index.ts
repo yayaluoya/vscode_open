@@ -1,14 +1,17 @@
 #!/usr/bin/env node
-import {getCmdOp, IOp as IOp_} from "yayaluoya-tool/dist/node/getCmdOp";
-import chalk from "chalk";
-import {server} from "../server";
-import {openItem} from "../tool/openItem";
-import {ItemDP} from "../localData/ItemDP";
+import { getCmdOp, IOp as IOp_ } from 'yayaluoya-tool/dist/node/getCmdOp';
+import chalk from 'chalk';
+import { server } from '../server';
+import { openItem } from '../tool/openItem';
+import { ItemDP } from '../localData/ItemDP';
 
 const packageJSON = require('../../package.json');
 import inquirer from 'inquirer';
-import {ArrayUtils} from "yayaluoya-tool/dist/ArrayUtils";
+import { ArrayUtils } from 'yayaluoya-tool/dist/ArrayUtils';
 
+/**
+ * 命令行选项
+ */
 interface IOp extends IOp_ {
     /** 帮助 */
     help: boolean;
@@ -22,18 +25,13 @@ interface IOp extends IOp_ {
     remove: string;
 }
 
-let cmdOp = getCmdOp<IOp &
-    Pick<
-        ComN.IConfig,
-        'port'
-    >
->((pro) => {
+let cmdOp = getCmdOp<IOp & Pick<ComN.IConfig, 'port'>>((pro) => {
     pro.option('-h --help')
         .option('-l --list')
         .option('-k --keys <keys>')
         .option('-p --port <port>')
         .option('-add --add <key...>')
-        .option('-r --remove <keys>')
+        .option('-r --remove <keys>');
 });
 
 // console.log('cmdOp', cmdOp);
@@ -49,7 +47,10 @@ switch (true) {
         console.log(chalk.green('   -p --port ') + chalk.gray('指定用哪个端口启动'));
         console.log(chalk.green('   -l --list ') + chalk.gray('显示项目列表，可以选择并打开具体项目'));
         console.log(chalk.green('   -k --keys <keys> ') + chalk.gray('直接打开哪些项目，多个项目用,，号分隔'));
-        console.log(chalk.green('   -add --add <key> <paths> ') + chalk.gray('添加一个项目，<key>：该项目的key，<paths>：该项目的本地路径列表，多个用,，号分隔'));
+        console.log(
+            chalk.green('   -add --add <key> <paths> ') +
+                chalk.gray('添加一个项目，<key>：该项目的key，<paths>：该项目的本地路径列表，多个用,，号分隔'),
+        );
         console.log(chalk.green('   -r --remove <keys> ') + chalk.gray('删除项目，多个项目用,，号分隔'));
         break;
     case cmdOp.list:
@@ -59,7 +60,7 @@ switch (true) {
                 type: 'checkbox',
                 name: 'select',
                 message: '项目列表-按空格键选择，按enter键确认:',
-                choices: list.map(_ => {
+                choices: list.map((_) => {
                     return {
                         name: `${_.key} ${_.title} ${_.paths.join(',')}`,
                         value: _,
@@ -67,7 +68,7 @@ switch (true) {
                 }),
                 pageSize: 20,
             })
-            .then(({select}: { select: ComN.IItemD[] }) => {
+            .then(({ select }: { select: ComN.IItemD[] }) => {
                 if (select && select.length > 0) {
                     select.forEach((item) => {
                         openItem(item.paths, item.openType);
@@ -85,11 +86,13 @@ switch (true) {
             break;
         }
         //直接打开项目
-        ItemDP.instance.data.filter(_ => {
-            return keys.includes(_.key);
-        }).forEach((item) => {
-            openItem(item.paths, item.openType);
-        });
+        ItemDP.instance.data
+            .filter((_) => {
+                return keys.includes(_.key);
+            })
+            .forEach((item) => {
+                openItem(item.paths, item.openType);
+            });
         break;
     case Boolean(cmdOp.add):
         let result = ItemDP.instance.add({
@@ -106,7 +109,7 @@ switch (true) {
         break;
     case Boolean(cmdOp.remove):
         let keys2 = cmdOp.remove?.split(/[,，]/g);
-        ArrayUtils.eliminate(ItemDP.instance.data, _ => {
+        ArrayUtils.eliminate(ItemDP.instance.data, (_) => {
             return keys2.includes(_.key);
         });
         console.log(chalk.blue('删除成功'));

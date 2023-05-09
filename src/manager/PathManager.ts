@@ -1,4 +1,4 @@
-import { join } from "path";
+import { join } from 'path';
 /**
  * 资源路径管理器
  */

@@ -1,7 +1,7 @@
-import { exec } from "child_process";
+import { exec } from 'child_process';
 
 /**
- * 打开一个url
+ * 用浏览器打开一个url
  * @param _url 该url
  */
 export function openUrl(_url: string) {

@@ -8,7 +8,7 @@ const child_process_1 = __importDefault(require("child_process"));
 const fs_1 = require("fs");
 const ArrayUtils_1 = require("yayaluoya-tool/dist/ArrayUtils");
 /**
- * 用vscode打开项目
+ * 打开项目
  * @param url
  * @param type 打开方式
  */
@@ -19,10 +19,10 @@ function openItem(url, type = 'vscode') {
             throwIfNoEntry: false,
         })) {
             switch (type) {
-                case "webStorm":
+                case 'webStorm':
                     child_process_1.default.exec(`webStorm ${o}`);
                     break;
-                case "vscode":
+                case 'vscode':
                 default:
                     child_process_1.default.exec(`code ${o}`);
                     break;

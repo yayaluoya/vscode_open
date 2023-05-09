@@ -24,27 +24,25 @@ const openUrl_1 = require("./tool/openUrl");
 function server(config_) {
     let config = ObjectUtils_1.ObjectUtils.clone2(ConfigDP_1.ConfigDP.instance.data);
     for (let i in config_) {
-        config_[i] && ObjectUtils_1.ObjectUtils.merge(config, {
-            [i]: config_[i],
-        });
+        config_[i] &&
+            ObjectUtils_1.ObjectUtils.merge(config, {
+                [i]: config_[i],
+            });
     }
     ConfigManager_1.ConfigManager.config = config;
-    /**
-     * 开启服务
-     */
     const app = (0, express_1.default)();
     app.use(express_1.default.json()); // for parsing application/json
     app.use(express_1.default.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
     //添加web资源代理
     app.use((0, serve_static_1.default)(PathManager_1.PathManager.webDistPath));
     //设置跨域访问（设置在所有的请求前面即可）
-    app.all("*", function (req, res, next) {
+    app.all('*', function (req, res, next) {
         //设置允许跨域的域名，*代表允许任意域名跨域
-        res.header("Access-Control-Allow-Origin", "*");
+        res.header('Access-Control-Allow-Origin', '*');
         //允许的header类型
-        res.header("Access-Control-Allow-Headers", "*");
-        //跨域允许的请求方式 
-        res.header("Access-Control-Allow-Methods", "DELETE,PUT,POST,GET,OPTIONS");
+        res.header('Access-Control-Allow-Headers', '*');
+        //跨域允许的请求方式
+        res.header('Access-Control-Allow-Methods', 'DELETE,PUT,POST,GET,OPTIONS');
         if (req.method == 'OPTIONS')
             res.sendStatus(200); //让options尝试请求快速结束
         else
@@ -74,7 +72,7 @@ exports.server = server;
  */
 function addApi(app) {
     /**
-     * 配置文件
+     * 配置文件相关的api
      */
     app.put('/config', (req, res) => {
         let data = req.body;
@@ -92,7 +90,7 @@ function addApi(app) {
     app.post('/itemOpen', (req, res) => {
         let item = req.body;
         (0, openItem_1.openItem)(item.paths, item.openType);
-        let onItem = ItemDP_1.ItemDP.instance.data.find(_ => {
+        let onItem = ItemDP_1.ItemDP.instance.data.find((_) => {
             return _.key == item.key;
         });
         if (onItem) {
@@ -111,12 +109,12 @@ function addApi(app) {
     });
     app.delete('/item', (req, res) => {
         let id = req.body.id;
-        ArrayUtils_1.ArrayUtils.eliminate(ItemDP_1.ItemDP.instance.data, _ => _.id == id);
+        ArrayUtils_1.ArrayUtils.eliminate(ItemDP_1.ItemDP.instance.data, (_) => _.id == id);
         res.send(new ResData_1.ResData(null, undefined, '删除成功'));
     });
     app.put('/item', (req, res) => {
         let item = req.body;
-        let onItem = ItemDP_1.ItemDP.instance.data.find(_ => _.id == item.id);
+        let onItem = ItemDP_1.ItemDP.instance.data.find((_) => _.id == item.id);
         if (!onItem) {
             res.send(new ResData_1.ResData().fail('找不到这个项目'));
             return;
@@ -129,6 +127,7 @@ function addApi(app) {
     app.get('/item', (req, res) => {
         res.send(new ResData_1.ResData(ItemDP_1.ItemDP.instance.data));
     });
+    // 导入项目
     app.post('/itemImport', (req, res) => {
         let itemList = req.body;
         if (itemList.length <= 0) {
@@ -145,9 +144,8 @@ function addApi(app) {
                 delete o.path;
             }
         }
-        //
         for (let o of itemList) {
-            let i = ItemDP_1.ItemDP.instance.data.findIndex(_ => _.key == o.key);
+            let i = ItemDP_1.ItemDP.instance.data.findIndex((_) => _.key == o.key);
             // 找到就替换，没找到就添加
             if (i >= 0) {
                 ItemDP_1.ItemDP.instance.data[i] = o;
@@ -161,6 +159,7 @@ function addApi(app) {
     /**
      * 其它
      */
+    // 获取一个文件
     app.get('/file', (req, res) => {
         var _a;
         let path = req.query.path;

@@ -1,5 +1,5 @@
-import { BaseDataProxy } from "./BaseDataProxy";
-import { instanceTool } from "yayaluoya-tool/dist/instanceTool";
+import { BaseDataProxy } from './BaseDataProxy';
+import { instanceTool } from 'yayaluoya-tool/dist/instanceTool';
 
 /**
  * 配置数据管理

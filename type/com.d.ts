@@ -2,7 +2,9 @@
  * 公共命名空间
  */
 namespace ComN {
-    // 打卡方式
+    /**
+     * 打卡方式
+     */
     type openType = 'vscode' | 'webStorm';
 
     /**
@@ -22,7 +24,7 @@ namespace ComN {
      */
     interface IItemD {
         /** 唯一的id */
-        id?: string,
+        id?: string;
         /** 一个简称，可以重复 */
         key: string;
         /** 图标，本地文件路径 */

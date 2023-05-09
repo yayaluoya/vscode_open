@@ -1,5 +1,5 @@
-import { BaseAC } from "./BaseAC";
-import { instanceTool } from "yayaluoya-tool/dist/instanceTool";
+import { BaseAC } from './BaseAC';
+import { instanceTool } from 'yayaluoya-tool/dist/instanceTool';
 
 /**
  * 配置接口
@@ -19,6 +19,6 @@ export class ConfigAC extends BaseAC {
         return this.putData({
             url: '/config',
             data,
-        })
+        });
     }
 }

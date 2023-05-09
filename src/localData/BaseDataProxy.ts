@@ -1,9 +1,9 @@
-import { LocalStorage_ as LocalStorage__ } from "yayaluoya-tool/dist/node/localData/LocalStorage_";
-import { BaseDataProxy as BaseDataProxy_ } from "yayaluoya-tool/dist/node/localData/BaseDataProxy";
-import { PathManager } from "../manager/PathManager";
+import { LocalStorage_ as LocalStorage__ } from 'yayaluoya-tool/dist/node/localData/LocalStorage_';
+import { BaseDataProxy as BaseDataProxy_ } from 'yayaluoya-tool/dist/node/localData/BaseDataProxy';
+import { PathManager } from '../manager/PathManager';
 
 class LocalStorage_ extends LocalStorage__ {
-    /** 
+    /**
      * 获取数据存储路径
      * TODO 需要重写
      */

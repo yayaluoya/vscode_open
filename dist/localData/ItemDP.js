@@ -39,7 +39,7 @@ let ItemDP = class ItemDP extends BaseDataProxy_1.BaseDataProxy {
             }
         }
         //如果存在一样key的话就添加错误
-        if (ArrayUtils_1.ArrayUtils.has(this.data, _ => {
+        if (ArrayUtils_1.ArrayUtils.has(this.data, (_) => {
             return _.key == item.key;
         })) {
             return '不能存在同样的key';

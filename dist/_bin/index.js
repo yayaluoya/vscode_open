@@ -33,7 +33,8 @@ switch (true) {
         console.log(chalk_1.default.green('   -p --port ') + chalk_1.default.gray('指定用哪个端口启动'));
         console.log(chalk_1.default.green('   -l --list ') + chalk_1.default.gray('显示项目列表，可以选择并打开具体项目'));
         console.log(chalk_1.default.green('   -k --keys <keys> ') + chalk_1.default.gray('直接打开哪些项目，多个项目用,，号分隔'));
-        console.log(chalk_1.default.green('   -add --add <key> <paths> ') + chalk_1.default.gray('添加一个项目，<key>：该项目的key，<paths>：该项目的本地路径列表，多个用,，号分隔'));
+        console.log(chalk_1.default.green('   -add --add <key> <paths> ') +
+            chalk_1.default.gray('添加一个项目，<key>：该项目的key，<paths>：该项目的本地路径列表，多个用,，号分隔'));
         console.log(chalk_1.default.green('   -r --remove <keys> ') + chalk_1.default.gray('删除项目，多个项目用,，号分隔'));
         break;
     case cmdOp.list:
@@ -43,7 +44,7 @@ switch (true) {
             type: 'checkbox',
             name: 'select',
             message: '项目列表-按空格键选择，按enter键确认:',
-            choices: list.map(_ => {
+            choices: list.map((_) => {
                 return {
                     name: `${_.key} ${_.title} ${_.paths.join(',')}`,
                     value: _,
@@ -69,9 +70,11 @@ switch (true) {
             break;
         }
         //直接打开项目
-        ItemDP_1.ItemDP.instance.data.filter(_ => {
+        ItemDP_1.ItemDP.instance.data
+            .filter((_) => {
             return keys.includes(_.key);
-        }).forEach((item) => {
+        })
+            .forEach((item) => {
             (0, openItem_1.openItem)(item.paths, item.openType);
         });
         break;
@@ -90,7 +93,7 @@ switch (true) {
         break;
     case Boolean(cmdOp.remove):
         let keys2 = (_b = cmdOp.remove) === null || _b === void 0 ? void 0 : _b.split(/[,，]/g);
-        ArrayUtils_1.ArrayUtils.eliminate(ItemDP_1.ItemDP.instance.data, _ => {
+        ArrayUtils_1.ArrayUtils.eliminate(ItemDP_1.ItemDP.instance.data, (_) => {
             return keys2.includes(_.key);
         });
         console.log(chalk_1.default.blue('删除成功'));

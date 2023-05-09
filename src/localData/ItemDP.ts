@@ -1,8 +1,8 @@
-import { BaseDataProxy } from "./BaseDataProxy";
-import { instanceTool } from "yayaluoya-tool/dist/instanceTool";
-import { Crypto } from "yayaluoya-tool/dist/Crypto";
-import { ArrayUtils } from "yayaluoya-tool/dist/ArrayUtils";
-import { statSync } from "fs";
+import { BaseDataProxy } from './BaseDataProxy';
+import { instanceTool } from 'yayaluoya-tool/dist/instanceTool';
+import { Crypto } from 'yayaluoya-tool/dist/Crypto';
+import { ArrayUtils } from 'yayaluoya-tool/dist/ArrayUtils';
+import { statSync } from 'fs';
 
 /**
  * 项目数据管理
@@ -19,7 +19,7 @@ export class ItemDP extends BaseDataProxy<ComN.IItemD[]> {
     /**
      * 添加一个item
      * 如果返回-1的话则添加失败
-     * @param item 
+     * @param item
      */
     add(item: Omit<ComN.IItemD, 'id' | 'openNumber'>): string | ComN.IItemD {
         if (!item.key) {
@@ -29,21 +29,27 @@ export class ItemDP extends BaseDataProxy<ComN.IItemD[]> {
             return '必须输入路径';
         }
         for (let path of item.paths) {
-            if (!statSync(path, {
-                throwIfNoEntry: false,
-            })) {
+            if (
+                !statSync(path, {
+                    throwIfNoEntry: false,
+                })
+            ) {
                 return `找不到路径:${path}`;
             }
         }
         //如果存在一样key的话就添加错误
-        if (ArrayUtils.has(this.data, _ => {
-            return _.key == item.key;
-        })) {
+        if (
+            ArrayUtils.has(this.data, (_) => {
+                return _.key == item.key;
+            })
+        ) {
             return '不能存在同样的key';
         }
         //
         let op: ComN.IItemD = {
-            id: new Crypto('', '').md5(Date.now() + Math.random().toString().split('.')[1]),
+            id: new Crypto('', '').md5(
+                Date.now() + Math.random().toString().split('.')[1],
+            ),
             ...item,
             openNumber: 0,
         };
