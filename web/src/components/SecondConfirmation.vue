@@ -14,7 +14,9 @@
         <template #footer>
             <span class="dialog-footer">
                 <el-button :loading="loading" @click="close">取 消</el-button>
-                <el-button :type="comType" :loading="loading" @click="submit">确 定</el-button>
+                <el-button :type="comType" :loading="loading" @click="submit"
+                    >确 定</el-button
+                >
             </span>
         </template>
     </el-dialog>

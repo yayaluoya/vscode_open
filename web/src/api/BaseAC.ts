@@ -64,7 +64,11 @@ export class BaseAC extends BaseApiCon {
         });
     }
 
-    protected resData_(data: ResData, con: boolean, res: AxiosResponse<any, any>): ResData<any> {
+    protected resData_(
+        data: ResData,
+        con: boolean,
+        res: AxiosResponse<any, any>,
+    ): ResData<any> {
         if (data.status != HttpStatus.OK) {
             throw data;
         }

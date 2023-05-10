@@ -7,10 +7,7 @@ import { ArrayUtils } from 'yayaluoya-tool/dist/ArrayUtils';
  * @param url
  * @param type 打开方式
  */
-export function openItem(
-    url: TArraify<string>,
-    type: ComN.openType = 'vscode',
-) {
+export function openItem(url: TArraify<string>, type: ComN.openType = 'vscode') {
     let urls = ArrayUtils.arraify(url);
     for (let o of urls) {
         if (

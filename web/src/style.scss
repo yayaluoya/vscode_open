@@ -1,24 +1,24 @@
-@import "./style/com.scss";
+@import './style/com.scss';
 
 body {
-  margin: 0;
+    margin: 0;
 }
 
 .el-dialog {
-  border-radius: 10px;
-  overflow: hidden;
+    border-radius: 10px;
+    overflow: hidden;
 
-  >.el-dialog__header {
-    border-bottom: 1px solid #f1f1f1;
-    margin: 0;
+    > .el-dialog__header {
+        border-bottom: 1px solid #f1f1f1;
+        margin: 0;
 
-    >.el-dialog__title {
-      font-weight: bold;
+        > .el-dialog__title {
+            font-weight: bold;
+        }
     }
-  }
 
-  >.el-dialog__footer {
-    border-top: 1px solid #f1f1f1;
-    margin: 0;
-  }
+    > .el-dialog__footer {
+        border-top: 1px solid #f1f1f1;
+        margin: 0;
+    }
 }

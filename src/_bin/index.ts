@@ -43,15 +43,28 @@ switch (true) {
     case cmdOp.help:
         console.log(chalk.hex('#d2e603')('vscode_open的所有命令😀:'));
         console.log(chalk.green('   -v --version ') + chalk.gray('查看当前工具版本'));
-        console.log(chalk.green('   -h --help ') + chalk.gray('查看所有的命令和帮助信息'));
+        console.log(
+            chalk.green('   -h --help ') + chalk.gray('查看所有的命令和帮助信息'),
+        );
         console.log(chalk.green('   -p --port ') + chalk.gray('指定用哪个端口启动'));
-        console.log(chalk.green('   -l --list ') + chalk.gray('显示项目列表，可以选择并打开具体项目'));
-        console.log(chalk.green('   -k --keys <keys> ') + chalk.gray('直接打开哪些项目，多个项目用,，号分隔'));
+        console.log(
+            chalk.green('   -l --list ') +
+                chalk.gray('显示项目列表，可以选择并打开具体项目'),
+        );
+        console.log(
+            chalk.green('   -k --keys <keys> ') +
+                chalk.gray('直接打开哪些项目，多个项目用,，号分隔'),
+        );
         console.log(
             chalk.green('   -add --add <key> <paths> ') +
-                chalk.gray('添加一个项目，<key>：该项目的key，<paths>：该项目的本地路径列表，多个用,，号分隔'),
+                chalk.gray(
+                    '添加一个项目，<key>：该项目的key，<paths>：该项目的本地路径列表，多个用,，号分隔',
+                ),
         );
-        console.log(chalk.green('   -r --remove <keys> ') + chalk.gray('删除项目，多个项目用,，号分隔'));
+        console.log(
+            chalk.green('   -r --remove <keys> ') +
+                chalk.gray('删除项目，多个项目用,，号分隔'),
+        );
         break;
     case cmdOp.list:
         let list = ItemDP.instance.data;
